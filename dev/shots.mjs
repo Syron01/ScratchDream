@@ -34,18 +34,6 @@ const savePanel = async (page, name, selector, pad = 24) => {
 };
 
 try {
-    // ---------------------------------------------------------------- toolbar popup
-    const popup = await browser.newPage();
-    await popup.setViewport({width: 420, height: 620, deviceScaleFactor: 2});
-    await popup.emulateMediaFeatures([{name: 'prefers-color-scheme', value: 'light'}]);
-    await popup.goto(`chrome-extension://${id}/popup.html`, {waitUntil: 'load'});
-    await wait(800);
-    const popupBox = await popup.evaluate(() => {
-        const r = document.querySelector('.popup').getBoundingClientRect();
-        return {x: 0, y: 0, width: Math.ceil(r.width), height: Math.ceil(r.height)};
-    });
-    await save(popup, 'popup.png', {clip: popupBox});
-
     // ---------------------------------------------------------------- live costume editor
     const tab = await browser.newPage();
     await tab.setViewport({width: 1440, height: 900, deviceScaleFactor: 1});
@@ -67,17 +55,10 @@ try {
     await wait(900);
     await save(tab, 'editor.png');
 
-    // shapes panel
+    // shapes panel, captured in the full editor so the site gallery keeps one 16:10 frame
     await tab.evaluate(() => document.querySelector('[data-adox-key="shapes"]').click());
     await wait(1600);
-    await savePanel(tab, 'shapes.png', '.adox-panel');
-    await tab.evaluate(() => document.querySelector('.adox-close').click());
-    await wait(250);
-
-    // advanced (mask / blend / PNG) panel
-    await tab.evaluate(() => document.querySelector('[data-adox-key="fx"]').click());
-    await wait(1600);
-    await savePanel(tab, 'fx.png', '.adox-panel');
+    await save(tab, 'shapes-editor.png');
     await tab.evaluate(() => document.querySelector('.adox-close').click());
     await wait(250);
 
@@ -168,16 +149,6 @@ try {
         if (c) c.click();
     });
     await wait(250);
-
-    // the same editor in a dark theme, to show that the boxes borrow the editor's own colours
-    await tab.emulateMediaFeatures([{name: 'prefers-color-scheme', value: 'dark'}]);
-    await wait(800);
-    await tab.evaluate(() => document.querySelector('[data-adox-key="fx"]').click());
-    await wait(1600);
-    await savePanel(tab, 'fx-dark.png', '.adox-panel');
-    await tab.evaluate(() => document.querySelector('.adox-close').click());
-    await wait(400);
-    await save(tab, 'editor-dark.png');
 } finally {
     stop();
 }

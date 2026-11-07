@@ -10,20 +10,16 @@
 </p>
 
 <p align="center">
-  <a href="#install"><img alt="Install" src="https://img.shields.io/badge/install-load%20unpacked-855CD6?style=flat-square"></a>
-  <img alt="Manifest V3" src="https://img.shields.io/badge/manifest-v3-4C97FF?style=flat-square">
-  <img alt="Version 2.2.0" src="https://img.shields.io/badge/version-2.2.0-FFAB19?style=flat-square">
-  <img alt="No network" src="https://img.shields.io/badge/network-none-3CB371?style=flat-square">
-  <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-575E75?style=flat-square">
-</p>
-
-<p align="center">
   <a href="#install">Install</a> ·
   <a href="#features">Features</a> ·
   <a href="#screenshots">Screenshots</a> ·
   <a href="#shortcuts">Shortcuts</a> ·
   <a href="#privacy">Privacy</a> ·
   <a href="#development">Development</a>
+</p>
+
+<p align="center">
+  <sub>Manifest V3 · v2.2.0 · No network · MIT licensed</sub>
 </p>
 
 ---
@@ -225,26 +221,14 @@ A small performance feature with a visible switch:
 <table>
 <tr>
 <td width="50%" valign="top">
-  <img src="docs/assets/popup.png" alt="ScratchDream toolbar panel">
-  <br>
-  <sub><b>The toolbar panel.</b> Nine switches, search, five categories, and an honest “9 of 9 on” count.</sub>
-</td>
-<td width="50%" valign="top">
   <img src="docs/assets/editor.png" alt="ScratchDream tools inside the TurboWarp costume editor">
   <br>
   <sub><b>Inside the costume editor.</b> Four extra tool buttons, the layer rail, the board button and Vector bitmapping next to the native conversion buttons.</sub>
 </td>
-</tr>
-<tr>
 <td width="50%" valign="top">
-  <img src="docs/assets/shapes.png" alt="31 shape tools">
+  <img src="docs/assets/pixel-editor.png" alt="Vector bitmapping pixel editor">
   <br>
-  <sub><b>31 shapes.</b> Arm a shape, drag to place it, then tune size and corner rounding.</sub>
-</td>
-<td width="50%" valign="top">
-  <img src="docs/assets/fx.png" alt="Mask, blend modes and transparent PNG panel">
-  <br>
-  <sub><b>Masks, 16 blend modes and PNG export.</b> Every option has a live mini sample beside its name.</sub>
+  <sub><b>Vector bitmapping.</b> A full pixel editor in its own window; the output is vector, not a bitmap.</sub>
 </td>
 </tr>
 <tr>
@@ -257,18 +241,6 @@ A small performance feature with a visible switch:
   <img src="docs/assets/board.png" alt="Plan board with cards">
   <br>
   <sub><b>The plan board.</b> Three columns, draggable cards, and JSON export/import. Stored in your browser, not the project.</sub>
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-  <img src="docs/assets/pixel-window.png" alt="Vector bitmapping pixel editor">
-  <br>
-  <sub><b>Vector bitmapping.</b> A full pixel editor in its own window; the output is vector, not a bitmap.</sub>
-</td>
-<td width="50%" valign="top">
-  <img src="docs/assets/fx-dark.png" alt="ScratchDream panel in dark theme">
-  <br>
-  <sub><b>Native theme support.</b> Panels borrow the editor's own colours, including dark themes and right-to-left layouts.</sub>
 </td>
 </tr>
 </table>

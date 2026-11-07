@@ -7,171 +7,112 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 1280px; height: 440px; overflow: hidden; }
     body {
+        background: #0e6b63;
         font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        background: #121020;
+        color: #f7f2e8;
     }
     .banner {
         position: relative;
         width: 1280px;
         height: 440px;
         overflow: hidden;
-        color: #fff;
-        background:
-            radial-gradient(760px 480px at 10% 10%, rgba(133, 92, 214, .95) 0%, rgba(133, 92, 214, 0) 64%),
-            radial-gradient(820px 620px at 94% 94%, rgba(35, 118, 214, .78) 0%, rgba(35, 118, 214, 0) 60%),
-            linear-gradient(132deg, #191329 0%, #171a31 48%, #0f1526 100%);
-    }
-    .dots {
-        position: absolute;
-        inset: 0;
-        background-image: radial-gradient(rgba(255, 255, 255, .16) 1px, transparent 1px);
-        background-size: 26px 26px;
-        opacity: .32;
-        mask-image: linear-gradient(105deg, #000 0%, rgba(0,0,0,.55) 50%, transparent 82%);
-    }
-    .halo {
-        position: absolute;
-        width: 540px;
-        height: 540px;
-        left: -190px;
-        top: -230px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 68%);
-        filter: blur(6px);
+        background: #0e6b63;
     }
     .left {
         position: absolute;
-        left: 60px;
-        top: 42px;
-        width: 600px;
-        z-index: 3;
+        left: 64px;
+        top: 46px;
+        width: 566px;
     }
-    .brand { display: flex; align-items: center; gap: 14px; }
-    .logo {
-        width: 66px;
-        height: 66px;
-        border-radius: 16px;
-        box-shadow: 0 12px 28px rgba(0, 0, 0, .35), 0 0 0 1px rgba(255, 255, 255, .18);
+    .eyebrow {
+        font-family: "Cascadia Code", Consolas, monospace;
+        font-size: 10.5px;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: rgba(247, 242, 232, .62);
     }
-    .name { display: flex; align-items: baseline; gap: 10px; }
-    .title {
-        font-size: 50px;
-        line-height: .95;
-        font-weight: 800;
-        letter-spacing: -2.2px;
-        text-shadow: 0 4px 22px rgba(0, 0, 0, .3);
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 18px;
     }
-    .ver {
-        font-size: 12px;
+    .brand img { width: 50px; height: 50px; }
+    .brand .name {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 46px;
         font-weight: 700;
-        letter-spacing: .2px;
-        color: #d9ccff;
-        padding: 4px 7px;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, .1);
-        border: 1px solid rgba(255, 255, 255, .16);
+        line-height: 1;
+        letter-spacing: -1.6px;
     }
     .tagline {
         margin-top: 24px;
-        font-size: 23px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 25px;
         line-height: 1.2;
-        font-weight: 700;
         letter-spacing: -.4px;
     }
-    .tagline em { font-style: normal; color: #c9b6ff; }
     .desc {
-        margin-top: 12px;
         width: 520px;
-        font-size: 14px;
-        line-height: 1.55;
-        color: rgba(255, 255, 255, .72);
+        margin-top: 12px;
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: rgba(247, 242, 232, .78);
     }
-    .pills { display: flex; flex-wrap: wrap; gap: 7px; width: 548px; margin-top: 17px; }
-    .pill {
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: .1px;
-        color: rgba(255, 255, 255, .9);
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, .07);
-        border: 1px solid rgba(255, 255, 255, .17);
-        backdrop-filter: blur(4px);
+    .facts {
+        margin-top: 22px;
+        font-family: "Cascadia Code", Consolas, monospace;
+        font-size: 10px;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: rgba(247, 242, 232, .54);
     }
     .hosts {
-        margin-top: 16px;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: .55px;
-        color: rgba(255, 255, 255, .52);
+        margin-top: 14px;
+        font-family: "Cascadia Code", Consolas, monospace;
+        font-size: 10px;
+        letter-spacing: .05em;
+        color: rgba(247, 242, 232, .4);
     }
-    .hosts b { color: rgba(255, 255, 255, .8); font-weight: 700; }
     .shot {
         position: absolute;
-        left: 700px;
-        top: 20px;
-        width: 580px;
-        transform: rotate(-1.6deg);
-        transform-origin: 20% 20%;
-        border-radius: 14px;
+        left: 676px;
+        top: 42px;
+        width: 560px;
+        border-radius: 8px;
         overflow: hidden;
-        box-shadow:
-            0 44px 90px rgba(0, 0, 0, .6),
-            0 0 0 1px rgba(255, 255, 255, .16),
-            0 0 0 8px rgba(255, 255, 255, .035);
-        z-index: 2;
     }
-    .shot img { width: 100%; display: block; }
-    .pop {
+    .shot img { display: block; width: 100%; }
+    .caption {
         position: absolute;
-        left: 1030px;
-        bottom: -52px;
-        width: 210px;
-        transform: rotate(2.4deg);
-        border-radius: 11px;
-        overflow: hidden;
-        box-shadow:
-            0 30px 60px rgba(0, 0, 0, .55),
-            0 0 0 1px rgba(255, 255, 255, .2);
-        z-index: 4;
+        left: 676px;
+        top: 404px;
+        font-family: "Cascadia Code", Consolas, monospace;
+        font-size: 9.5px;
+        letter-spacing: .05em;
+        color: rgba(247, 242, 232, .4);
     }
-    .pop img { width: 100%; display: block; }
 </style>
 </head>
 <body>
 <div class="banner">
-    <div class="dots"></div>
-    <div class="halo"></div>
-
     <div class="left">
+        <div class="eyebrow">Chrome extension · Manifest V3 · v2.2.0</div>
         <div class="brand">
-            <img class="logo" src="assets/logo.png" alt="">
-            <div class="name">
-                <div class="title">ScratchDream</div>
-                <div class="ver">v2.2.0</div>
-            </div>
+            <img src="assets/logo-mark-cream.png" alt="">
+            <div class="name">ScratchDream</div>
         </div>
-        <div class="tagline">Everything you imagine, <em>in Scratch.</em></div>
+        <div class="tagline">Everything you imagine, in Scratch.</div>
         <div class="desc">
-            A costume-editor upgrade for Scratch, TurboWarp and PenguinMod:
-            vector pixel art that never blurs, 31 shapes, pressure nibs, masks,
-            a layer rail, a plan board and one-click animation anchors.
+            Vector pixel art that never blurs, 31 shapes, pressure nibs, masks, layers,
+            animation anchors and a plan board — inside the editor you already know.
         </div>
-        <div class="pills">
-            <span class="pill">Vector bitmapping</span>
-            <span class="pill">31 shapes</span>
-            <span class="pill">Pressure nibs</span>
-            <span class="pill">Animation anchor</span>
-            <span class="pill">Layer rail</span>
-            <span class="pill">Masks &amp; blend</span>
-            <span class="pill">Plan board</span>
-            <span class="pill">Load diet</span>
-        </div>
-        <div class="hosts"><b>scratch.mit.edu</b> &nbsp;·&nbsp; <b>turbowarp.org</b> &nbsp;·&nbsp; <b>penguinmod.com</b></div>
+        <div class="facts">9 switches · 31 shapes · 16 blend modes · 0 network requests</div>
+        <div class="hosts">scratch.mit.edu · turbowarp.org · penguinmod.com</div>
     </div>
 
-    <div class="shot"><img src="assets/pixel-window.png" alt=""></div>
-    <div class="pop"><img src="assets/popup.png" alt=""></div>
+    <div class="shot"><img src="assets/editor.png" alt=""></div>
+    <div class="caption">Live TurboWarp editor · real Chrome profile</div>
 </div>
 </body>
 </html>
