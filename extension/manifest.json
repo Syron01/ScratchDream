@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "ScratchDream",
+  "version": "2.2.0",
+  "description": "Pixel snapping, shape and pen tools, masks, layers, animation anchor, a plan board and a load diet for the Scratch and TurboWarp costume editor.",
+  "action": {
+    "default_title": "ScratchDream",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "diet",
+        "enabled": true,
+        "path": "rules/diet.json"
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://turbowarp.org/*",
+        "https://*.turbowarp.org/*",
+        "https://scratch.mit.edu/*",
+        "https://penguinmod.com/*",
+        "https://*.penguinmod.com/*",
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*"
+      ],
+      "js": [
+        "adox-kostum.js"
+      ],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://turbowarp.org/*",
+        "https://*.turbowarp.org/*",
+        "https://scratch.mit.edu/*",
+        "https://penguinmod.com/*",
+        "https://*.penguinmod.com/*",
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*"
+      ],
+      "js": [
+        "bridge.js"
+      ],
+      "run_at": "document_idle",
+      "world": "ISOLATED"
+    }
+  ]
+}

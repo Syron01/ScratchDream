@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScratchDream — a costume editor upgrade for Scratch, TurboWarp and PenguinMod</title>
+<meta name="description" content="Vector pixel art, 31 shapes, pressure nibs, masks, a layer rail, a plan board and one-click animation anchors for the Scratch costume editor.">
+<style>
+    :root {
+        --purple: #855cd6;
+        --purple-dark: #6f49bd;
+        --blue: #4c97ff;
+        --orange: #ffab19;
+        --green: #3cb371;
+        --ink: #1f2340;
+        --muted: #5c6380;
+        --line: #e4e8f4;
+        --card: #ffffff;
+        --bg: #f5f7ff;
+        --shadow: 0 18px 45px rgba(37, 45, 92, .12);
+        --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+    }
+    a { color: var(--purple-dark); }
+    img { max-width: 100%; display: block; }
+    .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    .nav {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(245, 247, 255, .86);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(228, 232, 244, .9);
+    }
+    .nav .wrap { display: flex; align-items: center; gap: 18px; min-height: 66px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.4px; color: var(--ink); text-decoration: none; font-size: 18px; }
+    .brand img { width: 30px; height: 30px; border-radius: 8px; }
+    .brand .ver { font-size: 11px; font-weight: 700; color: var(--muted); background: #fff; border: 1px solid var(--line); padding: 2px 7px; border-radius: 999px; }
+    .nav nav { margin-left: auto; display: flex; align-items: center; gap: 18px; }
+    .nav nav a { text-decoration: none; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .nav nav a:hover { color: var(--purple-dark); }
+    .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 16px; border-radius: 10px;
+        background: var(--purple); color: #fff !important;
+        font-weight: 700; font-size: 14px; text-decoration: none;
+        box-shadow: 0 8px 18px rgba(133, 92, 214, .28);
+    }
+    .btn:hover { background: var(--purple-dark); }
+    .btn.ghost { background: #fff; color: var(--ink) !important; border: 1px solid var(--line); box-shadow: none; }
+    .btn.ghost:hover { border-color: #c9cfe6; }
+    .hero { padding: 34px 0 0; }
+    .hero img { width: 100%; border-radius: 22px; box-shadow: var(--shadow); }
+    .intro { padding: 34px 0 10px; display: grid; grid-template-columns: 1.25fr .75fr; gap: 26px; align-items: center; }
+    .intro h1 { margin: 0 0 10px; font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -1.6px; }
+    .intro h1 em { font-style: normal; color: var(--purple); }
+    .intro p { margin: 0; color: var(--muted); font-size: 16.5px; max-width: 640px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .badge { font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--muted); }
+    .badge.green { color: #227a4b; background: #e9f8ef; border-color: #c9eed8; }
+    .badge.purple { color: var(--purple-dark); background: #f0eaff; border-color: #ddd0ff; }
+    .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .hosts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .host { font-size: 12px; font-weight: 700; color: var(--muted); background: #fff; border: 1px solid var(--line); padding: 6px 10px; border-radius: 8px; }
+    .side-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: 0 10px 26px rgba(37, 45, 92, .06); }
+    .side-card h3 { margin: 0 0 8px; font-size: 15px; }
+    .side-card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+    .side-card li + li { margin-top: 6px; }
+    section { padding: 58px 0 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .section-head h2 { margin: 0; font-size: clamp(24px, 3vw, 34px); letter-spacing: -1px; line-height: 1.1; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 520px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: 0 8px 22px rgba(37, 45, 92, .05); }
+    .card .ico { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: #f0eaff; color: var(--purple-dark); font-size: 19px; margin-bottom: 12px; }
+    .card h3 { margin: 0 0 6px; font-size: 16px; letter-spacing: -.2px; }
+    .card p { margin: 0; color: var(--muted); font-size: 13.5px; }
+    .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .shot { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 24px rgba(37, 45, 92, .07); }
+    .shot img { width: 100%; }
+    .shot .cap { padding: 13px 16px 15px; font-size: 13px; color: var(--muted); }
+    .shot .cap b { color: var(--ink); }
+    .install { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .step { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 18px 54px; position: relative; box-shadow: 0 8px 20px rgba(37, 45, 92, .05); }
+    .step .num { position: absolute; left: 16px; top: 18px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; background: var(--purple); color: #fff; font-size: 12px; font-weight: 800; }
+    .step h3 { margin: 0 0 4px; font-size: 14.5px; }
+    .step p { margin: 0; color: var(--muted); font-size: 13px; }
+    code { background: #eef1fb; border: 1px solid #e0e5f5; border-radius: 6px; padding: 1px 6px; font-size: .9em; color: #3b4268; }
+    .note { margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: #fff7e6; border: 1px solid #ffe3a3; color: #6b4c00; font-size: 13.5px; }
+    .table-wrap { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: 0 8px 22px rgba(37, 45, 92, .05); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid #eef1f8; }
+    th { background: #f8f9ff; font-size: 12px; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
+    tr:last-child td { border-bottom: 0; }
+    kbd { font-family: inherit; font-size: 12px; font-weight: 700; background: #f1f3fb; border: 1px solid #dfe4f2; border-bottom-width: 2px; border-radius: 5px; padding: 2px 6px; color: #3b4268; white-space: nowrap; }
+    .privacy { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .privacy .card { padding: 24px; }
+    .privacy h3 { font-size: 15px; }
+    .privacy ul { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; }
+    .privacy li + li { margin-top: 6px; }
+    footer { margin-top: 64px; padding: 28px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--purple-dark); }
+    @media (max-width: 900px) {
+        .intro, .install, .privacy { grid-template-columns: 1fr; }
+        .grid { grid-template-columns: 1fr 1fr; }
+        .shots { grid-template-columns: 1fr; }
+        .nav nav a:not(.btn) { display: none; }
+    }
+    @media (max-width: 600px) {
+        .grid { grid-template-columns: 1fr; }
+        .section-head { display: block; }
+        .section-head p { margin-top: 8px; }
+        .wrap { width: calc(100% - 28px); }
+    }
+</style>
+</head>
+<body id="top">
+
+<header class="nav">
+    <div class="wrap">
+        <a class="brand" href="#top">
+            <img src="assets/logo.png" alt="">
+            ScratchDream <span class="ver">v2.2.0</span>
+        </a>
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#screenshots">Screenshots</a>
+            <a href="#install">Install</a>
+            <a href="#shortcuts">Shortcuts</a>
+            <a class="btn" href="https://github.com/Syron01/ScratchDream">GitHub</a>
+        </nav>
+    </div>
+</header>
+
+<main class="wrap">
+    <section class="hero">
+        <img src="assets/banner.png" alt="ScratchDream — a costume editor upgrade for Scratch, TurboWarp and PenguinMod">
+    </section>
+
+    <section class="intro">
+        <div>
+            <h1>Everything you imagine, <em>in Scratch.</em></h1>
+            <p>
+                ScratchDream upgrades the costume editor in <b>Scratch</b>, <b>TurboWarp</b> and
+                <b>PenguinMod</b> with vector pixel art, 31 shapes, pressure nibs, masks, a layer
+                rail, a plan board and one-click animation anchors — inside the editor you already know.
+            </p>
+            <div class="badges">
+                <span class="badge purple">Manifest V3</span>
+                <span class="badge purple">Chrome / Edge / Brave / Opera</span>
+                <span class="badge green">No network</span>
+                <span class="badge">MIT licensed</span>
+            </div>
+            <div class="cta">
+                <a class="btn" href="#install">Install in Chrome</a>
+                <a class="btn ghost" href="https://github.com/Syron01/ScratchDream">View on GitHub</a>
+            </div>
+            <div class="hosts">
+                <span class="host">scratch.mit.edu</span>
+                <span class="host">turbowarp.org</span>
+                <span class="host">penguinmod.com</span>
+            </div>
+        </div>
+        <aside class="side-card">
+            <h3>What's inside</h3>
+            <ul>
+                <li>Vector bitmapping that never blurs</li>
+                <li>31 shapes + 6 pressure nibs</li>
+                <li>Masks, 16 blend modes, transparent PNG</li>
+                <li>Layer rail with hide, lock and reorder</li>
+                <li>Animation anchor for costume swaps</li>
+                <li>Plan board stored in your browser</li>
+            </ul>
+        </aside>
+    </section>
+
+    <section id="features">
+        <div class="section-head">
+            <h2>Features</h2>
+            <p>Nine switches in the toolbar panel. Each one adds a focused tool to the costume editor — no new app, no new project format.</p>
+        </div>
+        <div class="grid">
+            <article class="card">
+                <div class="ico">◩</div>
+                <h3>Vector bitmapping</h3>
+                <p>A separate pixel-art window with nine tools, a palette, zoom, undo and edge cleanup. Writes real vector paths, not a bitmap costume.</p>
+            </article>
+            <article class="card">
+                <div class="ico">▲</div>
+                <h3>31 shape tools</h3>
+                <p>Arm a shape and drag. Triangles, stars, arrows, hearts, clouds, speech bubbles and more, with size and corner rounding.</p>
+            </article>
+            <article class="card">
+                <div class="ico">✎</div>
+                <h3>Pen and nibs</h3>
+                <p>Six pressure nib profiles plus free thickness. Use <kbd>[</kbd> <kbd>]</kbd> or <kbd>Alt</kbd> + wheel to change the nib.</p>
+            </article>
+            <article class="card">
+                <div class="ico">◎</div>
+                <h3>Animation anchor</h3>
+                <p>Measures the pivot jump between costumes and writes a shared centre in one click. Only the rotation centre changes.</p>
+            </article>
+            <article class="card">
+                <div class="ico">▤</div>
+                <h3>Layer rail</h3>
+                <p>Pick, hide, lock, rename and reorder objects. Align in six directions, rotate ±90°, duplicate, delete and set opacity.</p>
+            </article>
+            <article class="card">
+                <div class="ico">◐</div>
+                <h3>Masks and blend</h3>
+                <p>Mask a shape inside another, cycle 16 blend modes, adjust the miter limit and export transparent PNG at 1×, 2× or 4×.</p>
+            </article>
+            <article class="card">
+                <div class="ico">▦</div>
+                <h3>Plan board</h3>
+                <p>To do / Doing / Done columns with draggable cards. Stored in your browser; export and import as JSON.</p>
+            </article>
+            <article class="card">
+                <div class="ico">◒</div>
+                <h3>Gradient stops</h3>
+                <p>2, 3 and 4-stop gradients inside the editor's own colour box, written as native SVG gradients.</p>
+            </article>
+            <article class="card">
+                <div class="ico">⚡</div>
+                <h3>Load diet</h3>
+                <p>Slower idle polling, no background work and an optional analytics blocklist. Turn it off to restore the flat 900 ms loop.</p>
+            </article>
+        </div>
+    </section>
+
+    <section id="screenshots">
+        <div class="section-head">
+            <h2>Screenshots</h2>
+            <p>Captured from a real Chrome profile with the unpacked extension running against the live TurboWarp editor.</p>
+        </div>
+        <div class="shots">
+            <figure class="shot">
+                <img src="assets/pixel-window.png" alt="Vector bitmapping pixel editor">
+                <figcaption class="cap"><b>Vector bitmapping.</b> A pixel editor in its own window; the output is vector, so it stays sharp when the sprite scales.</figcaption>
+            </figure>
+            <figure class="shot">
+                <img src="assets/popup.png" alt="ScratchDream toolbar panel">
+                <figcaption class="cap"><b>The toolbar panel.</b> Nine switches, search, five categories and an honest on/off count.</figcaption>
+            </figure>
+            <figure class="shot">
+                <img src="assets/anchor.png" alt="Animation anchor panel">
+                <figcaption class="cap"><b>Animation anchor.</b> A real 14.4 px costume-swap jump, measured and ready to fix.</figcaption>
+            </figure>
+            <figure class="shot">
+                <img src="assets/board.png" alt="Plan board with cards">
+                <figcaption class="cap"><b>The plan board.</b> Three columns, draggable cards, JSON export/import — stored in your browser, not the project.</figcaption>
+            </figure>
+            <figure class="shot">
+                <img src="assets/layers.png" alt="Layer rail">
+                <figcaption class="cap"><b>The layer rail.</b> Pick, hide, lock, rename and reorder objects from the right edge of the canvas.</figcaption>
+            </figure>
+            <figure class="shot">
+                <img src="assets/fx.png" alt="Mask and blend panel">
+                <figcaption class="cap"><b>Masks and blend modes.</b> Every option has a live mini sample beside its name.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section id="install">
+        <div class="section-head">
+            <h2>Install</h2>
+            <p>No build step, no package manager. Load the <code>extension</code> folder as an unpacked Chrome extension.</p>
+        </div>
+        <div class="install">
+            <div class="step">
+                <span class="num">1</span>
+                <h3>Download the repository</h3>
+                <p>Use <b>Code → Download ZIP</b> on GitHub and extract it, or clone the repo.</p>
+            </div>
+            <div class="step">
+                <span class="num">2</span>
+                <h3>Open the extensions page</h3>
+                <p>Go to <code>chrome://extensions</code> (Edge: <code>edge://extensions</code>, Brave: <code>brave://extensions</code>).</p>
+            </div>
+            <div class="step">
+                <span class="num">3</span>
+                <h3>Turn on Developer mode</h3>
+                <p>The switch is in the top-right corner of the extensions page.</p>
+            </div>
+            <div class="step">
+                <span class="num">4</span>
+                <h3>Click “Load unpacked”</h3>
+                <p>Select the <code>extension</code> folder — the one that contains <code>manifest.json</code>. Do not select the repository root.</p>
+            </div>
+            <div class="step">
+                <span class="num">5</span>
+                <h3>Pin the extension</h3>
+                <p>Use the puzzle-piece icon in the toolbar and pin ScratchDream for quick access to the switches.</p>
+            </div>
+            <div class="step">
+                <span class="num">6</span>
+                <h3>Refresh the editor</h3>
+                <p>Press <kbd>F5</kbd> on the Scratch, TurboWarp or PenguinMod tab, then open the <b>Costumes</b> tab.</p>
+            </div>
+        </div>
+        <div class="note">
+            <b>Updating:</b> replace the files in the <code>extension</code> folder, click the reload icon on the ScratchDream card in <code>chrome://extensions</code>, then refresh the editor tab.
+        </div>
+    </section>
+
+    <section id="shortcuts">
+        <div class="section-head">
+            <h2>Shortcuts</h2>
+            <p>Shortcuts work while the costume editor is focused. Text fields keep their normal keys.</p>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td><kbd>Alt</kbd> + <kbd>P</kbd></td><td>Open / close Vector bitmapping</td></tr>
+                    <tr><td><kbd>Alt</kbd> + <kbd>D</kbd></td><td>Open Animation anchor; apply the current plan when open</td></tr>
+                    <tr><td><kbd>Alt</kbd> + <kbd>M</kbd></td><td>Mask / release the selected shape</td></tr>
+                    <tr><td><kbd>Alt</kbd> + <kbd>B</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd></td><td>Next / previous blend mode</td></tr>
+                    <tr><td><kbd>Alt</kbd> + <kbd>J</kbd></td><td>Set miter limit to 1.2</td></tr>
+                    <tr><td><kbd>Alt</kbd> + <kbd>X</kbd></td><td>Export transparent PNG</td></tr>
+                    <tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>Thinner / thicker pen nib</td></tr>
+                    <tr><td><kbd>Alt</kbd> + mouse wheel</td><td>Pen thickness</td></tr>
+                    <tr><td><kbd>Esc</kbd></td><td>Close the open panel, then release the armed tool</td></tr>
+                    <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td>Undo / redo in the pixel editor</td></tr>
+                    <tr><td>Arrow keys</td><td>Nudge the pixel drawing by one pixel</td></tr>
+                    <tr><td><kbd>+</kbd> / <kbd>−</kbd></td><td>Zoom the pixel editor</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="privacy">
+        <div class="section-head">
+            <h2>Privacy</h2>
+            <p>No account, no server, no telemetry. The extension is deliberately boring about data.</p>
+        </div>
+        <div class="privacy">
+            <div class="card">
+                <h3>What it asks for</h3>
+                <ul>
+                    <li><code>storage</code> — feature switches and the plan board's local state.</li>
+                    <li><code>declarativeNetRequest</code> — the optional analytics blocklist used by Load diet.</li>
+                    <li>No host permissions. Content scripts run only on the supported editor domains and localhost.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>What it never does</h3>
+                <ul>
+                    <li>No network requests, no background worker, no AI keys.</li>
+                    <li>No uploads. Your art stays in the project file.</li>
+                    <li>No plan-board data in the project. It lives in <code>localStorage</code>; export it for a backup.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="wrap">
+        <span>ScratchDream v2.2.0 · MIT licensed · independent project</span>
+        <span>
+            <a href="https://github.com/Syron01/ScratchDream">GitHub</a> ·
+            <a href="https://github.com/Syron01/ScratchDream#install">Install</a> ·
+            <a href="https://github.com/Syron01/ScratchDream/issues">Issues</a>
+        </span>
+    </div>
+</footer>
+
+</body>
+</html>

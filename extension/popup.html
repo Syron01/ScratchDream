@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScratchDream</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<main class="popup">
+    <header class="head">
+        <div class="bar">
+            <span class="title-row">
+                <img class="mark" src="icons/logo-64.png" alt="" width="24" height="24">
+                <span class="title">ScratchDream</span>
+                <span class="ver" id="version"></span>
+            </span>
+            <span class="status" id="status"></span>
+        </div>
+        <label class="search">
+            <span data-icon="search"></span>
+            <input type="search" id="search" placeholder="Search" aria-label="Search features" autocomplete="off">
+            <span class="hint" aria-hidden="true">/</span>
+        </label>
+    </header>
+
+    <div class="panel">
+        <nav class="filters" aria-label="Categories">
+            <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter" type="button" data-filter="drawing" aria-pressed="false">Drawing</button>
+            <button class="filter" type="button" data-filter="panels" aria-pressed="false">Panels</button>
+            <button class="filter" type="button" data-filter="colour" aria-pressed="false">Colour</button>
+            <button class="filter" type="button" data-filter="speed" aria-pressed="false">Speed</button>
+        </nav>
+        <section class="grid" id="grid">
+            <p class="empty" id="empty">Nothing matches.</p>
+        </section>
+    </div>
+
+    <footer class="foot">
+        <button class="action ghost" id="alloff" type="button">
+            <span data-icon="power"></span><span id="alloff-label">Turn all off</span>
+        </button>
+        <a class="action solid" id="editor" href="https://turbowarp.org/editor" target="_blank" rel="noreferrer">
+            <span data-icon="external"></span><span id="editor-label">Open editor</span>
+        </a>
+    </footer>
+</main>
+<script src="popup.js"></script>
+</body>
+</html>

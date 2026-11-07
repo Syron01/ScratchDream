@@ -1,0 +1,13 @@
+{
+    "name": "scratchdream-dev",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Live end-to-end checks for the ScratchDream costume-editor extension.",
+    "type": "module",
+    "scripts": {
+        "test": "node verify.mjs"
+    },
+    "dependencies": {
+        "puppeteer-core": "^23.11.1"
+    }
+}

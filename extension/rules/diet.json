@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "requestDomains": [
+                "googletagmanager.com",
+                "google-analytics.com",
+                "doubleclick.net"
+            ],
+            "initiatorDomains": [
+                "scratch.mit.edu",
+                "turbowarp.org",
+                "penguinmod.com"
+            ],
+            "resourceTypes": [
+                "script",
+                "xmlhttprequest",
+                "image",
+                "ping",
+                "other"
+            ]
+        }
+    }
+]
