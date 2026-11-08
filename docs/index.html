@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ScratchDream — a costume editor upgrade for Scratch, TurboWarp and PenguinMod</title>
-<meta name="description" content="Vector pixel art, 31 shapes, pressure nibs, masks, layers, animation anchors and a plan board for the Scratch, TurboWarp and PenguinMod costume editor.">
+<meta name="description" content="Vector pixel art, 31 shapes, pressure nibs, masks, layers, animation anchors, sprite folders and a plan board for the Scratch, TurboWarp and PenguinMod costume editor.">
 <meta name="theme-color" content="#0e6b63">
 <meta property="og:title" content="ScratchDream">
 <meta property="og:description" content="A costume-editor upgrade for Scratch, TurboWarp and PenguinMod.">
@@ -530,12 +530,12 @@
 <main id="main">
     <section class="hero" id="top">
         <div class="wrap hero-inner">
-            <p class="eyebrow on-teal">Chrome extension · Manifest V3 · v2.2.0</p>
+            <p class="eyebrow on-teal">Chrome extension · Manifest V3 · v2.4.0</p>
             <h1>Everything you imagine,<br>in Scratch.</h1>
             <p class="hero-copy">
                 A costume-editor upgrade for Scratch, TurboWarp and PenguinMod. Vector pixel art
-                that never blurs, 31 shapes, pressure nibs, masks, layers, animation anchors and a
-                plan board — inside the editor you already know.
+                that never blurs, 31 shapes, pressure nibs, masks, layers, animation anchors,
+                sprite folders and a plan board — inside the editor you already know.
             </p>
             <div class="hero-actions">
                 <a class="button cream" href="#install">Install for Chrome</a>
@@ -551,7 +551,7 @@
 
     <div class="facts">
         <div class="wrap">
-            <p>9 switches · 31 shapes · 16 blend modes · 0 network requests</p>
+            <p>13 switches · 31 shapes · 16 blend modes · 2 permissions</p>
         </div>
     </div>
 
@@ -559,7 +559,7 @@
         <div class="wrap">
             <header class="section-head">
                 <p class="eyebrow">Features</p>
-                <h2>Nine switches. One editor.</h2>
+                <h2>Thirteen switches. One editor.</h2>
                 <p>Every tool lives in the toolbar panel and adds a focused upgrade to the costume editor. No new app, no new project format.</p>
             </header>
             <div class="features-grid">
@@ -607,6 +607,11 @@
                     <span class="num">09</span>
                     <h3>Load diet</h3>
                     <p>Slower idle polling, no work in a background tab and an optional analytics blocklist. Turn it off to restore the flat 900 ms loop.</p>
+                </article>
+                <article class="feature">
+                    <span class="num">10</span>
+                    <h3>Sprite folders</h3>
+                    <p>Group sprites into folders above the sprite list. A folder filters the pane; costumes, scripts, layer order and the project file stay untouched.</p>
                 </article>
             </div>
         </div>
@@ -722,22 +727,23 @@
         <div class="wrap">
             <header class="section-head">
                 <p class="eyebrow">Privacy</p>
-                <h2>No account. No server. No telemetry.</h2>
+                <h2>No account. No server of ours. No telemetry.</h2>
                 <p>The extension is deliberately boring about data.</p>
             </header>
             <div class="privacy-grid">
                 <div>
                     <h3>What it asks for</h3>
                     <ul>
-                        <li><code>storage</code> — feature switches and the plan board's local state.</li>
+                        <li><code>storage</code> — feature switches and the plan board's and folders' local state.</li>
                         <li><code>declarativeNetRequest</code> — the optional analytics blocklist used by Load diet.</li>
                         <li>No host permissions. Content scripts run only on the supported editor domains and localhost.</li>
+                        <li>What it calls: Scratch's own pages and API for the panels, Google fonts and ForumFind for the forum skin and its search. Nothing else.</li>
                     </ul>
                 </div>
                 <div>
                     <h3>What it never does</h3>
                     <ul>
-                        <li>No network requests, no background worker, no AI keys.</li>
+                        <li>No background worker, no analytics, no AI keys.</li>
                         <li>No uploads. Your art stays in the project file.</li>
                         <li>No plan-board data in the project. It lives in <code>localStorage</code>; export it for a backup.</li>
                     </ul>
@@ -765,7 +771,7 @@
             </nav>
         </div>
         <div class="footer-bottom">
-            <span>ScratchDream v2.2.0 · MIT licensed</span>
+            <span>ScratchDream v2.4.0 · MIT licensed</span>
             <span>Independent project. Not affiliated with Scratch, TurboWarp or PenguinMod.</span>
         </div>
     </div>

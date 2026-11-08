@@ -23,7 +23,7 @@ editöründe aynı kod çalışır.
 
 ## Eklenti paneli
 
-Tarayıcının köşesindeki ScratchDream simgesine tıkla. Panelde dokuz satır, bir arama
+Tarayıcının köşesindeki ScratchDream simgesine tıkla. Panelde on üç satır, bir arama
 çubuğu ve beş kategori düğmesi var. Panel **420** piksel genişliğinde; Chrome'un 600
 piksel sınırının altında kaldığı için kaydırman gerekmez. Sürüm etiketi doğrudan
 `manifest.json`'dan okunur, bu yüzden elle güncellenmez.
@@ -37,12 +37,13 @@ piksel sınırının altında kaldığı için kaydırman gerekmez. Sürüm etik
 | Paneller | Katman şeridi | — |
 | Paneller | Maske ve karışım — 16 mod, şeffaf PNG | `Alt+M` `Alt+B` `Alt+X` |
 | Paneller | **Plan tahtası** — proje kartları | — |
+| Paneller | **Sprite klasörleri** — sprite'ları grupla | — |
 | Renk | Degrade durakları — 3 ve 4 durak | — |
 | Hız | Yük diyeti — boşta yavaş yoklama, analitik engeli | — |
 
 - Karoya nereden tıklarsan anahtar döner; kapalı karo bütünüyle solar.
-- `9 / 9 açık` satırı dürüsttür: kaç aracın açık olduğunu söyler.
-- **Hepsini kapat** tek hamlede dokuzunu kapatır, aynı düğme tekrar açar.
+- `13 / 13 açık` satırı dürüsttür: kaç aracın açık olduğunu söyler.
+- **Hepsini kapat** tek hamlede on üçünü kapatır, aynı düğme tekrar açar.
 - Kapattığın araç açık sekmelerde anında kaybolur; ayar tarayıcıda saklanır.
 - Arama ve sekmeler aynı listeyi süzer; eşleşme yoksa "Eşleşen yok." yazar.
 
@@ -134,7 +135,7 @@ tahtası** var:
 - Notlar `localStorage`'da, tarayıcıda saklanır — **proje dosyasına yazılmaz**. Başka
   bilgisayarda görmek için dışa aktar / içe aktar.
 
-Kapatıp açtığında kartlar yerinde durur. Gizli bilgi saklanmaz; ağa hiçbir şey gitmez.
+Kapatıp açtığında kartlar yerinde durur. Gizli bilgi saklanmaz; notlar yalnızca tarayıcıda durur.
 
 ## Animasyon ekseni
 
@@ -170,6 +171,21 @@ Tuvalin sağ kenarındaki şerit; üstüne gelince açılır, **Açık tut** ile
 - Dört ok sırayı değiştirir (En Öne / Bir Öne / Bir Arkaya / En Arkaya).
 - Çoğalt, sil, altı yönlü hizala, ±90° döndür, saydamlık.
 
+## Sprite klasörleri
+
+Sprite listesinin üstünde ince bir klasör şeridi durur. Scratch'in kendi listesi
+değişmez; şerit yalnızca hangi sprite'ların görüneceğini seçer. Kostüm, kod, sıra ve
+proje dosyası aynı kalır.
+
+- **+** ile klasör aç, adını yaz, `Enter`.
+- Bir sprite'ı klasöre koymak için karosunun sağ üstündeki **klasör düğmesine** bas
+  (seçili sprite'ta ve fare üstündeyken görünür) ve klasörü seç.
+- **Tümü** hepsini gösterir; bir klasör adına basınca yalnız o klasördekiler kalır.
+- Klasör adına **çift tıkla** → adını değiştir. **Sağ tık** → adını değiştir / klasörü sil.
+- Boş klasör açıkken altında kısa bir açıklama çıkar; **Tümü**'ne dönüp sprite ekle.
+- Klasörler proje başına tarayıcıda saklanır (proje dosyasına yazılmaz). Proje
+  adresine göre ayrılır; kaydedilmemiş çalışmalarda sekme başlığı esas alınır.
+
 ## Kısayollar
 
 | Tuş | İş |
@@ -184,6 +200,37 @@ Tuvalin sağ kenarındaki şerit; üstüne gelince açılır, **Açık tut** ile
 | Alt+X | şeffaf PNG |
 | Esc | önce paneli, sonra aracı bırakır |
 | Ctrl+Z | editörün kendi geri alı |
+
+## users2 API
+
+Profilin tamamı tek JSON'da. Tarayıcıya yaz:
+
+`scratch.mit.edu/users2/games-coder`
+
+İçinde ne var:
+
+- tüm projeler + görüntüleme, kalp, favori, remix
+- takipçi, takip, favori ve stüdyo listeleri
+- son profil yorumları
+- dil ipuçları, bağlantılar, etiketler, parmak izi
+- "son yorum nerede yazıldı" taraması
+
+Kodla:
+
+```js
+const p = await (await fetch('https://scratch.mit.edu/users2/griffpatch')).json();
+p.counts.followers;
+p.trace.last;
+```
+
+Hızlı cevap: `?depth=quick`
+Daha derin tarama: `?depth=deep&scan=96`
+Önbelleği atla: `?refresh=1`
+
+Not: Scratch yorum geçmişinin tamamını yayınlamıyor.
+Her profilde yalnızca son ~25 konuşma okunabiliyor.
+Bu yüzden son yorum taraması bir güven yüzdesi gösterir;
+bulamazsa uydurmaz, "bulunamadı" der.
 
 ## Güncelleme
 
@@ -207,9 +254,10 @@ Sürüm `manifest.json` içindeki `version` alanından gelir.
 - Karışım modu kostüm SVG'sinde `mix-blend-mode` olarak durur; editörde görünür,
   eski sahne çizicisi bu satırı yok sayabilir.
 - **Magic Code kaldırıldı (v2.0.0).** `extension/magic/`, `mcp-server/` ve AI anahtarı
-  izinleri yok. Eklenti hiçbir sunucuya bağlanmaz; istediği iki izin `storage`
-  (ayarları saklamak) ve `declarativeNetRequest` (analitik isteklerini kesmek).
-  Site içeriğine erişim izni istemez.
+  izinleri yok. Eklentinin kendi sunucusu yok; istekler yalnızca Scratch'in sayfaları ve
+  API'si ile forum temasının yazı tipleri (Google) ve ForumFind araması için gider.
+  İstediği iki izin `storage` (ayarları saklamak) ve `declarativeNetRequest`
+  (analitik isteklerini kesmek). Site içeriğine erişim izni istemez.
 - **Piksel modu ayrıldı (v2.1.0).** Eski araç-sütunu kutusu kaldırıldı; yerine dönüştürme
   satırından açılan, vektör yazan ayrı piksel editörü geldi.
 - **Yük diyeti eklendi (v2.2.0).** Boşta 1400 ms'e çıkan, editör kapalıyken 2000 ms'e inen ve
@@ -227,6 +275,11 @@ Sürüm `manifest.json` içindeki `version` alanından gelir.
   boş kenar seçiliyor) ve tuvale inen ilk işaretçi kutuyu kapatıyor. Kanıt Türkçe ve Arapça
   editörde canlı koşuldu: kutu AÇIKken kalemin altında `paper-canvas` var, vuruş modelde yer
   bırakıyor.
+- **Sprite klasörleri (v2.4.0).** Sprite listesinin üstünde ince bir şerit. Proje dosyasına
+  hiçbir şey yazılmaz; yalnızca hangi karoların görüneceği değişir. Klasörler tarayıcıda proje
+  başına saklanır (Scratch/TurboWarp proje adresi; kaydedilmemiş işte sekme başlığı). Sprite'ın
+  adı değişse de klasör üyeliği oturum boyunca korunur. Dosyayı taşıyan bir kullanıcı klasörleri
+  de taşımak isterse aynı adresten açmalıdır.
 - **Editörün diliyle konuşuyor.** Editör Türkçe açılıyorsa kendi kutularımızın etiketleri de
   Türkçe; Arapça açılıyorsa kutular aynalanıp sağdan diziliyor. İkisi de canlı editörde
   doğrulandı: `node dev/probes/_locale.mjs` → 12/12. Ürün kodu hiçbir yerde çevrilmiş buton
