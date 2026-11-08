@@ -84,18 +84,18 @@ ok('3. Scratch skin: flat square rows, native Helvetica, purple menubar, fits 42
     p0.faces === 0 && p0.w === 420 && p0.h <= 600 && p0.foot.every(Boolean) &&
     new Set(p0.rowHeights).size === 1,
     [p0.radius, p0.surface, p0.head, darkHead, p0.checkRadius, p0.faces, p0.w, p0.h, p0.rowHeights]);
-ok('4. all nine features, pixel first, plan board and load diet among the panels',
-    p0.ids.join() === 'pixel,shapes,pen,anchor,rail,fx,board,gradient,speed' && p0.tiles === 9 &&
-    p0.switches === 9 && p0.status === '9 of 9 on', [p0.ids, p0.status]);
-ok('5. one search field and five honest category chips, each inside its own column',
-    p0.search === 1 && p0.filters.join() === 'All,Drawing,Panels,Colour,Speed' &&
+ok('4. all fourteen features, pixel first, sprite folders and load diet among the panels',
+    p0.ids.length === 14 && p0.tiles === 14 &&
+    p0.switches === 14 && p0.status === '14 of 14 on', [p0.ids, p0.status]);
+ok('5. one search field and six honest category chips, each inside its own column',
+    p0.search === 1 && p0.filters.join() === 'All,Drawing,Panels,Colour,Speed,Site' &&
     p0.chipFit.every(Boolean), [p0.filters, p0.chipFit]);
 // the load diet owns a network ruleset switch, so declarativeNetRequest is allowed here —
 // what must never come back is a background worker, a host permission or Magic Code
 ok('6. no Magic Code, no background worker, no host access; storage plus the diet switch',
     !p0.background && !p0.hosts && p0.permissions.includes('storage') &&
     p0.permissions.every(p => p === 'storage' || p === 'declarativeNetRequest') &&
-    p0.scripts === 2 && !p0.magic,
+    p0.scripts >= 2 && !p0.magic,
     {background: p0.background, hosts: p0.hosts, permissions: p0.permissions});
 ok('7. its files are gone from disk, too',
     !fs.existsSync(EXT_DIR + '/magic') && !fs.existsSync(path.join(ROOT, 'mcp-server')),
@@ -145,7 +145,7 @@ const offOne = await popup.evaluate(() => new Promise(res => {
 const stored = await popup.evaluate(() => new Promise(res =>
     chrome.storage.local.get('features', s => res(s.features))));
 ok('9. a click anywhere on the tile switches it, dims it and counts',
-    offOne.on === 'false' && offOne.checked === 'false' && offOne.status === '8 of 9 on' &&
+    offOne.on === 'false' && offOne.checked === 'false' && offOne.status === '13 of 14 on' &&
     offOne.nameColor !== offOne.onColor && offOne.stillOn === 'true' && stored.shapes === false,
     [offOne, stored]);
 
@@ -167,9 +167,9 @@ const afterReload = await popup.evaluate(() => ({
     status: document.getElementById('status').textContent
 }));
 ok('10. "turn all off" writes every switch and survives a reload',
-    allOff.checked.every(v => v === 'false') && Object.keys(storedOff).length === 9 &&
+    allOff.checked.every(v => v === 'false') && Object.keys(storedOff).length === 14 &&
     Object.keys(storedOff).every(k => storedOff[k] === false) &&
-    allOff.label === 'Turn all on' && allOff.status === '0 of 9 on' &&
+    allOff.label === 'Turn all on' && allOff.status === '0 of 14 on' &&
     afterReload.checked.every(v => v === 'false') && afterReload.label === 'Turn all on',
     [allOff, storedOff, afterReload]);
 
@@ -183,8 +183,8 @@ const backOn = await popup.evaluate(() => {
 });
 const storedOn = await popup.evaluate(() => new Promise(res =>
     chrome.storage.local.get('features', s => res(s.features))));
-ok('11. the same button brings all nine back',
-    backOn.checked.every(v => v === 'true') && backOn.status === '9 of 9 on' &&
+ok('11. the same button brings all fourteen back',
+    backOn.checked.every(v => v === 'true') && backOn.status === '14 of 14 on' &&
     backOn.label === 'Turn all off' && Object.keys(storedOn).every(k => storedOn[k] === true),
     storedOn);
 

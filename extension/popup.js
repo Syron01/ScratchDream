@@ -16,10 +16,14 @@ var ICONS = {
     pen: '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>',
     anchor: '<path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>',
     layers: '<path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/>',
+    folder: '<path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2zm.5 6H13v2.5h2.5V14H13v2.5h-2.5V14H8v-1.5h2.5V10z"/>',
     mask: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-13.5v11c3.04 0 5.5-2.46 5.5-5.5S15.04 6.5 12 6.5z"/>',
     gradient: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zM6.5 12c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>',
     board: '<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>',
-    bolt: '<path d="M11 21h-1l1-7H7.5c-.85 0-.55-.34-.31-.78C8.73 10.79 10.53 7.54 13 3h1l-1 7h3.48c.83 0 .57.34.32.78C13.27 15.21 11 21 11 21z"/>'
+    bolt: '<path d="M11 21h-1l1-7H7.5c-.85 0-.55-.34-.31-.78C8.73 10.79 10.53 7.54 13 3h1l-1 7h3.48c.83 0 .57.34.32.78C13.27 15.21 11 21 11 21z"/>',
+    quote: '<path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>',
+    feed: '<path d="M15 4H3v2h12V4zm6 4H3v2h18V8zm-2 4H3v2h16v-2zm-4 4H3v2h12v-2z"/>',
+    api: '<path d="M12 3C7 3 3 4.3 3 6s4 3 9 3 9-1.3 9-3-4-3-9-3zM3 9v3c0 1.7 4 3 9 3s9-1.3 9-3V9c-1.6 1.3-5.1 2-9 2S4.6 10.3 3 9zm0 6v3c0 1.7 4 3 9 3s9-1.3 9-3v-3c-1.6 1.3-5.1 2-9 2s-7.4-.7-9-2z"/>'
 };
 
 function svg(name) {
@@ -93,6 +97,12 @@ var FEATURES = [
         search: 'board plan notes cards gdd columns tahta not kart'
     },
     {
+        id: 'folders', group: 'panels', icon: 'folder',
+        en: ['Sprite folders', 'Group sprites into folders'],
+        tr: ['Sprite klasörleri', 'Sprite’ları klasörlerde topla'],
+        search: 'sprite folders folder group characters organise organize klasör klasor sprite grupla düzenle karakter'
+    },
+    {
         id: 'gradient', group: 'colour', icon: 'gradient',
         en: ['Gradient stops', 'Stops in the colour box'],
         tr: ['Degrade durakları', 'Duraklar renk kutusunda'],
@@ -103,14 +113,38 @@ var FEATURES = [
         en: ['Load diet', 'Slower polling when idle, analytics blocked'],
         tr: ['Yük diyeti', 'Boşta yavaş yoklama, analitik engeli'],
         search: 'speed performance lag freeze fps repaint diet optimisation hiz performans kasılma donma boyama analitik'
+    },
+    {
+        id: 'quotes', group: 'site', icon: 'quote',
+        en: ['Comment quotes', 'Reply with a snippet'],
+        tr: ['Yorum alıntısı', 'Yanıtı alıntıyla başlat'],
+        search: 'comment quote reply snippet profile project alinti yorum yanit profil'
+    },
+    {
+        id: 'forums', group: 'site', icon: 'feed',
+        en: ['Live home panels', 'Your numbers and the forum pulse'],
+        tr: ['Canlı ana sayfa', 'Senin sayıların ve forum nabzı'],
+        search: 'home splash forum discuss feed news activity pulse studio community profile ana sayfa haber akis nabiz stüdyo topluluk hesap'
+    },
+    {
+        id: 'forumskin', group: 'site', icon: 'feed',
+        en: ['X-style forum', 'Discuss rebuilt as a feed'],
+        tr: ['X görünümlü forum', 'Forum akış olarak yeniden'],
+        search: 'forum discuss x feed dark light skin redesign forum görünüm karanlık aydınlık akış'
+    },
+    {
+        id: 'users2', group: 'site', icon: 'api',
+        en: ['users2 API', 'Raw profile JSON, no panel'],
+        tr: ['users2 API', 'Ham profil JSON’u, panel yok'],
+        search: 'users2 api profile data comments projects followers json boost raw ham veri profil yorum proje takipci takipçi analiz'
     }
 ];
 
 var I18N = {
     search: ['Search', 'Ara'],
     filters: [
-        ['All', 'Drawing', 'Panels', 'Colour', 'Speed'],
-        ['Tümü', 'Çizim', 'Paneller', 'Renk', 'Hız']
+        ['All', 'Drawing', 'Panels', 'Colour', 'Speed', 'Site'],
+        ['Tümü', 'Çizim', 'Paneller', 'Renk', 'Hız', 'Site']
     ],
     status: ['{on} of {total} on', '{on} / {total} açık'],
     alloff: ['Turn all off', 'Hepsini kapat'],

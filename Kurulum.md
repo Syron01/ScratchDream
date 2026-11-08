@@ -23,7 +23,7 @@ editöründe aynı kod çalışır.
 
 ## Eklenti paneli
 
-Tarayıcının köşesindeki ScratchDream simgesine tıkla. Panelde on üç satır, bir arama
+Tarayıcının köşesindeki ScratchDream simgesine tıkla. Panelde on dört satır, bir arama
 çubuğu ve beş kategori düğmesi var. Panel **420** piksel genişliğinde; Chrome'un 600
 piksel sınırının altında kaldığı için kaydırman gerekmez. Sürüm etiketi doğrudan
 `manifest.json`'dan okunur, bu yüzden elle güncellenmez.
@@ -42,8 +42,8 @@ piksel sınırının altında kaldığı için kaydırman gerekmez. Sürüm etik
 | Hız | Yük diyeti — boşta yavaş yoklama, analitik engeli | — |
 
 - Karoya nereden tıklarsan anahtar döner; kapalı karo bütünüyle solar.
-- `13 / 13 açık` satırı dürüsttür: kaç aracın açık olduğunu söyler.
-- **Hepsini kapat** tek hamlede on üçünü kapatır, aynı düğme tekrar açar.
+- `14 / 14 açık` satırı dürüsttür: kaç aracın açık olduğunu söyler.
+- **Hepsini kapat** tek hamlede on dördünü kapatır, aynı düğme tekrar açar.
 - Kapattığın araç açık sekmelerde anında kaybolur; ayar tarayıcıda saklanır.
 - Arama ve sekmeler aynı listeyi süzer; eşleşme yoksa "Eşleşen yok." yazar.
 
@@ -61,6 +61,9 @@ Convert to Vector** düğmelerinin hemen yanında üçüncü seçenek olarak dur
 
 Kostüm başlığının sağ üstündeki boşlukta, editörün kendi renginde küçük bir
 **plan tahtası** düğmesi durur.
+
+Mor üst menüde, editörün kendi düğmeleriyle aynı biçimde **Optimize** düğmesi durur;
+projeyi tek tıkla küçültür (aşağıda).
 
 Fırça veya Silgi'ye dokununca uç kutusu kendiliğinden açılır; tuvale dokunup çizmeye
 başladığın an kapanır (fırçaya bir daha dokunursan tekrar açılır). Katman listesi tuvalin
@@ -186,6 +189,35 @@ proje dosyası aynı kalır.
 - Klasörler proje başına tarayıcıda saklanır (proje dosyasına yazılmaz). Proje
   adresine göre ayrılır; kaydedilmemiş çalışmalarda sekme başlığı esas alınır.
 
+## Tek tıkla optimizasyon
+
+Editörün mor üst menüsünde **Optimize** düğmesi durur. Scratch tarzı onay penceresini açar;
+Türkçe ve İngilizce editör dilini izler. **Optimize et** deyince proje yerinde küçültülür:
+
+- **Vektör kostümler:** editör üst verisi, kullanılmayan tanımlar, boş gruplar ve gereksiz
+  sayı hassasiyeti temizlenir. Her SVG değişiklikten önce ve sonra aynı boyutta rasterleştirilir;
+  pikselleri kaydıran değişiklik kabul edilmez.
+- **Bitmap kostümler:** yalnız çözülen pikseller birebir aynıysa yeniden sıkıştırılır; PNG/JPG
+  içindeki gizli üst veri silinir.
+- **Sesler:** WAV, süre/tepe/RMS kontrolünden sonra yüksek kaliteli MP3'e çevrilir (44,1 kHz
+  stereo için 192 kbps, düşük örnekleme hızlarında ölçekli). Kip ve ses seviyesi tutmazsa eski
+  dosya kalır. Mevcut MP3'ler yeniden kodlanmaz; yalnız kaldırılabilir ID3/APE etiketleri atılır.
+- **Kod:** boş script ve yorumlar, kullanılmayan değişken/liste/haberler ve sahipsiz bloklar
+  kaldırılır. Değişken, liste ve haber bildirimleri alfabetik sıralanır; üst düzey scriptler
+  576 px'lik ızgaraya yerleştirilir. Blok kimlikleri, alanları, sırası ve davranışı değişmez.
+- **Kuklalar:** var olan özel klasör adları korunur, `Klasör N` gibi genel adlar içeriğe göre
+  yeniden adlandırılır, boş klasörler silinir ve tüm kuklalar **Ana, Dünya, Arayüz, Ses,
+  Sistem, Diğer** gruplarından uygun olanına yerleştirilir; boş kalan grup oluşturulmaz.
+  Klasör bilgisi yalnız tarayıcıda saklanır, proje dosyasına yazılmaz.
+- **Geri al:** tek tıkla. Özgün dosya baytları, WAV biçimleri, bloklar, bildirimler, blok
+  konumları, yorum geometrisi ve klasör durumu geri gelir.
+
+Ölçülen sonuç (47,4 MB'lık 811805586 projesi, Scratch ve TurboWarp): **47,4 MB → 41,8 MB**,
+**5,61 MB kazanç (%11,8)**. 76 vektör ve 317 bitmap kostüm işlendi, 45 WAV'ın 38'i MP3 oldu;
+33.667 blok ve 511 script korundu, 697 bildirim sıralandı, 516 blok düzenlendi, 32 kukla
+5 klasöre yerleşti. Geri al, proje JSON'unu bayt bayt ve dosya toplamını 44.483.970 bayta
+döndürdü. İşlem yaklaşık 20 saniye sürer; **Vazgeç** veya iptal hiçbir değişiklik bırakmaz.
+
 ## Kısayollar
 
 | Tuş | İş |
@@ -203,7 +235,7 @@ proje dosyası aynı kalır.
 
 ## users2 API
 
-Profilin tamamı tek JSON'da. Tarayıcıya yaz:
+Profilin tamamı tek JSON'da. Tarayıcıya yaz; sayfada panel yok, sadece ham JSON açılır:
 
 `scratch.mit.edu/users2/games-coder`
 
@@ -214,6 +246,11 @@ Profilin tamamı tek JSON'da. Tarayıcıya yaz:
 - son profil yorumları
 - dil ipuçları, bağlantılar, etiketler, parmak izi
 - "son yorum nerede yazıldı" taraması
+- yanıt gecikmesi, en çok konuştuğu kişiler
+- yazı parmak izi, seri tespiti, kelime dağarcığı
+- favori zevk haritası ve remix ağı
+- proje kapaklarından renk paleti
+- her alanın kaynağını gösteren kanıt zinciri
 
 Kodla:
 
@@ -280,6 +317,14 @@ Sürüm `manifest.json` içindeki `version` alanından gelir.
   başına saklanır (Scratch/TurboWarp proje adresi; kaydedilmemiş işte sekme başlığı). Sprite'ın
   adı değişse de klasör üyeliği oturum boyunca korunur. Dosyayı taşıyan bir kullanıcı klasörleri
   de taşımak isterse aynı adresten açmalıdır.
+- **Tek tıkla optimizasyon (v2.6.0).** Mor üst menüdeki **Optimize** düğmesi SVG, PNG/JPG, WAV,
+  kod ve kukla klasörlerini birlikte temizler. SVG'ler piksel piksel doğrulanır, PNG'ler yalnız
+  birebir aynı pikselle küçültülür, WAV'lar süre/tepe/RMS kontrolünden sonra MP3 olur; mevcut
+  MP3'ler yeniden kodlanmaz. Kullanılmayan bildirimler, boş script/yorumlar ve sahipsiz bloklar
+  gider; bildirimler sıralanır; bloklar 576 px ızgaraya yerleşir. **Geri al** dosya baytlarını,
+  blokları, konumları, yorum geometrisini ve klasörleri birebir eski hâline getirir. Ölçüm:
+  47,4 MB → 41,8 MB; 33.667 blok ve 511 script korundu; 32 kukla 5 klasöre yerleşti. Aynı test
+  scratch.mit.edu ve turbowarp.org üzerinde, Türkçe ve İngilizce arayüzle canlı koşuldu.
 - **Editörün diliyle konuşuyor.** Editör Türkçe açılıyorsa kendi kutularımızın etiketleri de
   Türkçe; Arapça açılıyorsa kutular aynalanıp sağdan diziliyor. İkisi de canlı editörde
   doğrulandı: `node dev/probes/_locale.mjs` → 12/12. Ürün kodu hiçbir yerde çevrilmiş buton

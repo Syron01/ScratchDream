@@ -514,7 +514,7 @@
     // The toolbar popup owns these switches; they live in chrome.storage, which the MAIN world
     // cannot read, so the isolated bridge hands them over as a message. Anything unknown stays on.
     var FEATURES = {shapes: true, pen: true, fx: true, rail: true, gradient: true, anchor: true,
-        pixel: true, board: true, speed: true};
+        pixel: true, board: true, speed: true, folders: true};
     function feat (key) { return FEATURES[key] !== false; }
     // localStorage is a boundary. The panel this replaced stored {on, target, type, stops}; the
     // picker supplies the colours now, so only the count, the offsets and the extra colours carry
@@ -615,6 +615,12 @@
             exportB: 'Export', importB: 'Import', delCard: 'Delete card', delCol: 'Delete column',
             boardBad: 'That file is not a plan board', boardExported: 'board downloaded',
             boardFail: 'the download was refused', boardImported: 'board loaded',
+            sfAll: 'All', sfNew: 'New folder', sfName: 'Folder name', sfMove: 'Move to folder',
+            sfNone: 'No folder', sfHint: 'Right-click: rename or delete',
+            sfEmpty: 'No sprites in this folder yet. Open All and use the folder button on a sprite.',
+            sfMoved: '{s} → {f}', sfRenamed: 'folder renamed', sfDeleted: 'folder deleted',
+            sfCreated: 'folder created', sfDup: 'that folder name is taken',
+            sfRename: 'Rename folder', sfDelete: 'Delete folder', sfDefault: 'Folder',
             px: 'px'},
         tr: {shapes: 'Şekiller', pen: 'ScratchDream kalemi', gradient: 'Gradyan', size: 'Boyut', round: 'Köşe yumuşatma', pressure: 'Kalem basıncı', off: 'Devre dışı', close: 'Kapat', apply: 'Uygula', use: 'Kullan',
             gSolid: 'Düz', gHoriz: 'Yatay', gVert: 'Dikey', gRadial: 'Radyal', stops: 'Durak',
@@ -652,6 +658,12 @@
             exportB: 'Dışa aktar', importB: 'İçe aktar', delCard: 'Kartı sil', delCol: 'Sütunu sil',
             boardBad: 'Bu dosya bir plan tahtası değil', boardExported: 'tahta indirildi',
             boardFail: 'indirme reddedildi', boardImported: 'tahta yüklendi',
+            sfAll: 'Tümü', sfNew: 'Yeni klasör', sfName: 'Klasör adı', sfMove: 'Klasöre taşı',
+            sfNone: 'Klasörsüz', sfHint: 'Sağ tık: adını değiştir ya da sil',
+            sfEmpty: 'Bu klasörde henüz sprite yok. Tümü’nü aç ve bir sprite’ın klasör düğmesini kullan.',
+            sfMoved: '{s} → {f}', sfRenamed: 'klasör adı değişti', sfDeleted: 'klasör silindi',
+            sfCreated: 'klasör oluşturuldu', sfDup: 'bu klasör adı zaten var',
+            sfRename: 'Klasörün adını değiştir', sfDelete: 'Klasörü sil', sfDefault: 'Klasör',
             px: 'px'}
     };
     var lang = 'en';
@@ -1136,6 +1148,57 @@
         '.adox-board-btn:hover{background:rgba(127,127,127,.24);border-color:rgba(127,127,127,.4)}',
         '.adox-board-btn:focus-visible{outline:2px solid #4c97ff;outline-offset:-2px}',
         '.adox-board-btn img{width:1.35rem;height:1.35rem;display:block}',
+        // the folder strip is pinned to the top of the sprite list, so it scrolls with the pane but
+        // never leaves it; chips borrow the sprite tile's radius and the selection accent
+        '.adox-folders{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:.2rem;',
+        'padding:.3rem .4rem;min-height:1.95rem;box-sizing:border-box;background:var(--adox-surface);',
+        'border-bottom:1px solid var(--adox-field-border);overflow-x:auto;overflow-y:hidden;',
+        'scrollbar-width:none;font:700 10px/1.2 "Helvetica Neue",Helvetica,Arial,sans-serif}',
+        '.adox-folders::-webkit-scrollbar{display:none}',
+        '.adox-fchip{display:inline-flex;align-items:center;gap:.25rem;flex:0 0 auto;height:1.45rem;',
+        'max-width:7.5rem;padding:0 .45rem;box-sizing:border-box;border:1px solid transparent;',
+        'border-radius:.3rem;background:var(--adox-field);color:var(--adox-text);font:inherit;',
+        'cursor:pointer;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}',
+        '.adox-fchip:hover{background:var(--adox-hover)}',
+        '.adox-fchip[aria-selected=true]{background:var(--adox-accent-soft);border-color:var(--adox-accent);',
+        'color:var(--adox-accent)}',
+        '.adox-fchip svg{width:.8rem;height:.8rem;flex:0 0 auto;display:block}',
+        '.adox-fchip .adox-fname{overflow:hidden;text-overflow:ellipsis}',
+        '.adox-fchip .adox-fnum{opacity:.55;font-weight:600;font-variant-numeric:tabular-nums}',
+        '.adox-fchip[aria-selected=true] .adox-fnum{opacity:.8}',
+        '.adox-fchip.adox-fnew{width:1.45rem;padding:0;justify-content:center;background:transparent;',
+        'border-color:var(--adox-field-border);font-size:.9rem;font-weight:400;line-height:1}',
+        '.adox-fchip.adox-fnew:hover{background:var(--adox-hover)}',
+        '.adox-fchip.adox-fhold{padding:0;background:transparent;border:0}',
+        '.adox-finput{width:5.6rem;height:1.45rem;padding:0 .35rem;box-sizing:border-box;font:inherit;',
+        'font-weight:600;border:1px solid var(--adox-accent);border-radius:.3rem;background:var(--adox-field);',
+        'color:var(--adox-text);outline:none}',
+        '.adox-fempty{padding:.5rem .6rem;font-size:.62rem;line-height:1.45;opacity:.62;',
+        'background:var(--adox-surface);color:var(--adox-text);',
+        'font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}',
+        // one folder button per sprite tile, in the corner the delete button leaves free
+        '.adox-sf-tile{position:absolute;top:2px;inset-inline-end:2px;z-index:2;width:1.1rem;height:1.1rem;',
+        'display:none;place-items:center;padding:0;border:0;border-radius:.2rem;cursor:pointer;',
+        'background:var(--adox-surface);color:var(--adox-text);opacity:.9}',
+        '.adox-sf-tile svg{width:.75rem;height:.75rem;display:block}',
+        '.adox-sf-tile:hover{background:var(--adox-accent);color:#fff}',
+        '[class*="sprite-selector-item_sprite-selector-item"]:hover .adox-sf-tile,',
+        '[class*="sprite-selector-item_is-selected"] .adox-sf-tile,',
+        '.adox-sf-tile:focus-visible{display:grid}',
+        '.adox-fmenu{position:fixed;z-index:10002;min-width:8.6rem;max-width:14rem;max-height:16rem;overflow:auto;',
+        'padding:.2rem;box-sizing:border-box;border-radius:.35rem;background:var(--adox-surface);',
+        'color:var(--adox-text);border:1px solid var(--adox-field-border);box-shadow:var(--adox-shadow);',
+        'font:600 11px/1.3 "Helvetica Neue",Helvetica,Arial,sans-serif}',
+        '.adox-fmenu .adox-fmhead{padding:.15rem .4rem .3rem;font-size:.6rem;font-weight:700;opacity:.55;',
+        'overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+        '.adox-fmenu button{display:flex;align-items:center;gap:.35rem;width:100%;padding:.28rem .4rem;',
+        'border:0;border-radius:.25rem;background:transparent;color:inherit;font:inherit;',
+        'text-align:start;cursor:pointer;white-space:nowrap}',
+        '.adox-fmenu button:hover{background:var(--adox-hover)}',
+        '.adox-fmenu .adox-fmlabel{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}',
+        '.adox-fmenu svg{width:.85rem;height:.85rem;flex:0 0 auto;display:block}',
+        '.adox-fmenu .adox-fmcheck{width:.85rem;flex:0 0 auto;color:var(--adox-accent)}',
+        '.adox-fmenu hr{border:0;border-top:1px solid var(--adox-field-border);margin:.2rem .1rem}',
         '.adox-wide{width:27rem}',
         '.adox-fxbox{width:23rem}',
         '@media (max-width:560px){.adox-panel{width:min(19rem,92vw)}.adox-wide{width:min(27rem,92vw)}',
@@ -5288,6 +5351,7 @@
             closePixelEditor();
             if (pxBtn) { pxBtn.remove(); pxBtn = null; }
         }
+        if (feat('folders')) sfSync(); else sfTeardown();
     }
 
     window.addEventListener('message', function (event) {
@@ -5392,9 +5456,700 @@
         }
     }
 
+    // ------------------------------------------------------------ sprite folders
+    // The project file has no slot for sprite groups, so a folder is page metadata: sprites keep
+    // their names, order, scripts and behaviour, and the strip only decides which tiles the pane
+    // shows. Stored per project in localStorage — nothing is written into the sb3.
+    var SF_KEY = 'adox-folders-v1';
+    var SF_FOLDER = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+        '<path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>';
+    var SF_FOLDER_PLUS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+        '<path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z' +
+        'm.5 5H13v2.5h2.5V14H13v2.5h-2.5V14H8v-1.5h2.5V10z"/></svg>';
+    var SF_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>';
+
+    var sf = {bar: null, hint: null, menu: null, obs: null, obsItems: null, raf: 0, sig: '', shown: '',
+        active: '', project: '', data: null, links: {}, theme: '', editing: false, mounted: false, count: 0};
+
+    function sfAll () {
+        try {
+            var raw = window.localStorage.getItem(SF_KEY);
+            var all = raw ? JSON.parse(raw) : {};
+            return all && typeof all === 'object' ? all : {};
+        } catch (e) {
+            return {};
+        }
+    }
+    function sfSave () {
+        try {
+            var all = sfAll();
+            all[sf.project] = sf.data;
+            window.localStorage.setItem(SF_KEY, JSON.stringify(all));
+        } catch (e) { /* private mode: the folders last for this tab only */ }
+    }
+    // the editor URL names the project on Scratch and on TurboWarp project links; a work that is
+    // still only on disk falls back to its title, which is the closest thing it has to an id
+    function sfProjectKey () {
+        var p = location.pathname;
+        var m = p.match(/\/projects\/(\d+)/);
+        if (m) return 'scratch:' + m[1];
+        m = p.match(/\/(\d{6,})(?:\/|$)/);
+        if (m) return location.hostname + ':' + m[1];
+        var title = String(document.title || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+        return location.hostname + ':' + p + ':' + title;
+    }
+    function sfLoad () {
+        var key = sfProjectKey();
+        if (sf.project !== key) {
+            sf.project = key;
+            var raw = sfAll()[key];
+            var data = {folders: [], marks: []};
+            if (raw && Array.isArray(raw.folders)) {
+                raw.folders.forEach(function (f) {
+                    if (f && typeof f.id === 'string' && typeof f.name === 'string') {
+                        data.folders.push({id: f.id, name: f.name.slice(0, 24)});
+                    }
+                });
+            }
+            if (raw && Array.isArray(raw.marks)) {
+                raw.marks.forEach(function (m) {
+                    if (m && typeof m.n === 'string' && typeof m.f === 'string') data.marks.push({n: m.n, f: m.f});
+                });
+            }
+            sf.data = data;
+            sf.links = {};
+            sf.active = '';
+            sf.sig = '';
+            sf.count = 0;
+        }
+        return sf.data;
+    }
+    function sfId () {
+        return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    function sfPane () {
+        return document.querySelector('[class*="sprite-selector_sprite-selector"]');
+    }
+    function sfTiles () {
+        // scoped to the pane's own scroll area: the sprite library modal reuses item classes
+        var scroll = document.querySelector('[class*="sprite-selector_scroll-wrapper"]');
+        if (!scroll) return [];
+        return Array.prototype.slice.call(
+            scroll.querySelectorAll('[class*="sprite-selector-item_sprite-selector-item"]'));
+    }
+    function sfTileName (tile) {
+        var n = tile && tile.querySelector('[class*="sprite-selector-item_sprite-name"]');
+        return n ? (n.textContent || '').trim() : '';
+    }
+    function sfSprites () {
+        var out = [];
+        var vm = findVM();
+        if (vm && vm.runtime && vm.runtime.targets) {
+            vm.runtime.targets.forEach(function (t) {
+                if (t && t.isOriginal !== false && !t.isStage && t.sprite && t.sprite.name) {
+                    out.push({id: t.id, name: String(t.sprite.name)});
+                }
+            });
+            if (out.length) return out;
+        }
+        // a VM that is still booting: the tiles already carry the names the user will see
+        sfTiles().forEach(function (tile) {
+            var name = sfTileName(tile);
+            if (name) out.push({id: 'dom:' + name, name: name});
+        });
+        return out;
+    }
+
+    // a runtime id survives a rename, so the link is kept by id once made; the saved mark carries
+    // the name, which is what can be matched again after a reload
+    function sfLink (sprites) {
+        var data = sfLoad();
+        var live = {};
+        sprites.forEach(function (s) { live[s.id] = true; });
+        Object.keys(sf.links).forEach(function (id) {
+            if (!live[id]) delete sf.links[id];
+        });
+        var used = [];
+        Object.keys(sf.links).forEach(function (id) { used.push(sf.links[id]); });
+        sprites.forEach(function (s) {
+            var link = sf.links[s.id];
+            if (link) {
+                if (link.n !== s.name) { link.n = s.name; sfSave(); }
+                return;
+            }
+            for (var i = 0; i < data.marks.length; i++) {
+                var mark = data.marks[i];
+                if (used.indexOf(mark) < 0 && mark.n === s.name) {
+                    sf.links[s.id] = mark;
+                    used.push(mark);
+                    return;
+                }
+            }
+        });
+    }
+    function sfFolderOf (sprite) {
+        var link = sf.links[sprite.id];
+        if (!link) return '';
+        for (var i = 0; i < sf.data.folders.length; i++) {
+            if (sf.data.folders[i].id === link.f) return link.f;
+        }
+        return '';
+    }
+    function sfFolderName (id) {
+        for (var i = 0; i < sf.data.folders.length; i++) {
+            if (sf.data.folders[i].id === id) return sf.data.folders[i].name;
+        }
+        return '';
+    }
+    function sfNameTaken (name, exceptId) {
+        var lower = name.toLowerCase();
+        return sfLoad().folders.some(function (f) {
+            return f.id !== exceptId && f.name.toLowerCase() === lower;
+        });
+    }
+    function sfAssign (sprite, folderId) {
+        var data = sfLoad();
+        var link = sf.links[sprite.id];
+        if (!link) {
+            link = {n: sprite.name, f: ''};
+            sf.links[sprite.id] = link;
+            data.marks.push(link);
+        }
+        link.n = sprite.name;
+        link.f = folderId || '';
+        if (!link.f) {
+            var i = data.marks.indexOf(link);
+            if (i >= 0) data.marks.splice(i, 1);
+        }
+        sfSave();
+        sf.sig = '';
+        sfSync();
+    }
+    function sfMakeFolder (name) {
+        var data = sfLoad();
+        if (!name || sfNameTaken(name)) {
+            var base = t('sfDefault');
+            var n = 1;
+            do { name = base + ' ' + n++; } while (sfNameTaken(name));
+        }
+        var folder = {id: sfId(), name: String(name).slice(0, 24)};
+        data.folders.push(folder);
+        sfSave();
+        return folder;
+    }
+
+    function sfPaint (node) {
+        var pane = sfPane() || document.body;
+        var surface = paintedColor(pane, 'backgroundColor') || '#ffffff';
+        var c = parseColor(surface) || {r: 255, g: 255, b: 255, a: 1};
+        var dark = brightness(c) < 0.55;
+        var selected = pane.querySelector ? pane.querySelector('[class*="sprite-selector-item_is-selected"]') : null;
+        var accent = selected ? window.getComputedStyle(selected).borderTopColor : '';
+        if (!parseColor(accent) || /^rgba\(0,\s*0,\s*0,\s*0\)$/.test(accent)) {
+            accent = cssVar(window.getComputedStyle(pane), '--looks-secondary') || '#4c97ff';
+        }
+        var ac = parseColor(accent) || {r: 76, g: 151, b: 255, a: 1};
+        applyTheme(node, {
+            dark: dark,
+            surface: surface,
+            accent: accent,
+            text: dark ? '#eeeeee' : '#575e75',
+            field: dark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)',
+            border: dark ? 'rgba(255,255,255,.16)' : 'rgba(0,0,0,.12)',
+            hover: dark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.08)',
+            active: rgba(ac, 0.35),
+            shadow: dark ? '0 8px 24px rgba(0,0,0,.5)' : '0 8px 24px rgba(148,162,188,.35)'
+        });
+        node.style.setProperty('--adox-accent-soft', rgba(ac, dark ? 0.22 : 0.13));
+        node.style.colorScheme = dark ? 'dark' : 'light';
+    }
+
+    function sfEnsureBar (scroll) {
+        if (sf.bar && sf.bar.parentElement === scroll) return;
+        if (sf.bar) sf.bar.remove();
+        var bar = document.createElement('div');
+        bar.className = 'adox-folders';
+        bar.setAttribute('role', 'tablist');
+        sf.bar = bar;
+        sf.mounted = true;
+        sf.sig = '';
+        scroll.insertBefore(bar, scroll.firstChild);
+        sfPaint(bar);
+    }
+    function sfEnsureHint (scroll) {
+        if (sf.hint && sf.hint.parentElement === scroll) return sf.hint;
+        if (sf.hint) sf.hint.remove();
+        sf.hint = document.createElement('div');
+        sf.hint.className = 'adox-fempty';
+        sf.hint.style.display = 'none';
+        scroll.insertBefore(sf.hint, sf.bar && sf.bar.nextSibling ? sf.bar.nextSibling : scroll.firstChild);
+        sfPaint(sf.hint);
+        return sf.hint;
+    }
+    function sfChip (folderId, label, count, active, isFolder) {
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'adox-fchip';
+        chip.dataset.folder = folderId;
+        chip.setAttribute('role', 'tab');
+        chip.setAttribute('aria-selected', String(active));
+        if (isFolder) {
+            chip.title = t('sfHint');
+            chip.innerHTML = SF_FOLDER;
+        }
+        var name = document.createElement('span');
+        name.className = 'adox-fname';
+        name.textContent = label;
+        var num = document.createElement('span');
+        num.className = 'adox-fnum';
+        num.textContent = count;
+        chip.append(name, num);
+        chip.addEventListener('click', function (event) {
+            if (event.detail > 1) return; // the second click of a rename must not re-filter
+            sf.active = folderId;
+            sfSync();
+        });
+        if (isFolder) {
+            chip.addEventListener('dblclick', function (event) {
+                event.preventDefault();
+                sfRenameChip(chip, folderId);
+            });
+            chip.addEventListener('contextmenu', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                sfChipMenu(event.clientX, event.clientY, folderId);
+            });
+        }
+        return chip;
+    }
+    function sfRenderBar (sprites) {
+        if (!sf.bar || sf.editing) return;
+        var data = sfLoad();
+        if (sf.active && !data.folders.some(function (f) { return f.id === sf.active; })) sf.active = '';
+        var counts = {};
+        sprites.forEach(function (s) {
+            var f = sfFolderOf(s);
+            counts[f] = (counts[f] || 0) + 1;
+        });
+        var sig = JSON.stringify([lang, sprites.length, counts,
+            data.folders.map(function (f) { return [f.id, f.name]; })]);
+        if (sig === sf.sig) {
+            // the filter changes a lot and a rebuild between the two clicks of a double-click
+            // would eat the rename gesture, so only the selected flag is touched here
+            if (sf.shown !== sf.active) {
+                sf.shown = sf.active;
+                Array.prototype.forEach.call(sf.bar.querySelectorAll('.adox-fchip[data-folder]'), function (chip) {
+                    chip.setAttribute('aria-selected', String((chip.dataset.folder || '') === sf.active));
+                });
+            }
+            return;
+        }
+        sf.sig = sig;
+        sf.shown = sf.active;
+        sf.bar.textContent = '';
+        sf.bar.appendChild(sfChip('', t('sfAll'), sprites.length, sf.active === '', false));
+        data.folders.forEach(function (f) {
+            sf.bar.appendChild(sfChip(f.id, f.name, counts[f.id] || 0, sf.active === f.id, true));
+        });
+        var add = document.createElement('button');
+        add.type = 'button';
+        add.className = 'adox-fchip adox-fnew';
+        add.title = t('sfNew');
+        add.setAttribute('aria-label', t('sfNew'));
+        add.textContent = '+';
+        add.addEventListener('click', function () { sfNewChip(add); });
+        sf.bar.appendChild(add);
+    }
+    function sfNameInput (holder, initial, commit, cancel) {
+        if (sf.editing) return;
+        sf.editing = true;
+        var input = document.createElement('input');
+        input.className = 'adox-finput';
+        input.type = 'text';
+        input.maxLength = 24;
+        input.value = initial || '';
+        input.setAttribute('aria-label', t('sfName'));
+        holder.textContent = '';
+        holder.appendChild(input);
+        input.focus();
+        input.select();
+        var done = false;
+        function finish (ok) {
+            if (done) return;
+            done = true;
+            sf.editing = false;
+            var value = input.value.trim();
+            if (ok && value) commit(value);
+            else if (cancel) cancel();
+            sf.sig = '';
+            sfSync();
+        }
+        input.addEventListener('keydown', function (event) {
+            event.stopPropagation();
+            if (event.key === 'Enter') { event.preventDefault(); finish(true); }
+            else if (event.key === 'Escape') { event.preventDefault(); finish(false); }
+        });
+        input.addEventListener('blur', function () { finish(true); });
+        input.addEventListener('pointerdown', function (event) { event.stopPropagation(); });
+        input.addEventListener('click', function (event) { event.stopPropagation(); });
+    }
+    function sfNewChip (addBtn) {
+        if (!sf.bar || sf.editing) return;
+        var holder = document.createElement('span');
+        holder.className = 'adox-fchip adox-fhold';
+        sf.bar.insertBefore(holder, addBtn);
+        sfNameInput(holder, '', function (name) {
+            if (sfNameTaken(name)) { pageToast(t('sfDup'), true); return; }
+            sfMakeFolder(name);
+            sf.active = '';
+            pageToast(t('sfCreated'));
+        }, function () {
+            holder.remove();
+        });
+    }
+    function sfRenameChip (chip, folderId) {
+        var folder = sfLoad().folders.filter(function (f) { return f.id === folderId; })[0];
+        if (!folder) return;
+        sfNameInput(chip, folder.name, function (name) {
+            if (sfNameTaken(name, folderId)) { pageToast(t('sfDup'), true); return; }
+            folder.name = name;
+            sfSave();
+            pageToast(t('sfRenamed'));
+        });
+    }
+    function sfDeleteFolder (folderId) {
+        var data = sfLoad();
+        data.folders = data.folders.filter(function (f) { return f.id !== folderId; });
+        data.marks = data.marks.filter(function (m) { return m.f !== folderId; });
+        Object.keys(sf.links).forEach(function (id) {
+            if (sf.links[id].f === folderId) delete sf.links[id];
+        });
+        if (sf.active === folderId) sf.active = '';
+        sfSave();
+        sf.sig = '';
+        pageToast(t('sfDeleted'));
+        sfSync();
+    }
+
+    function sfCloseMenu () {
+        if (sf.menu) {
+            sf.menu.remove();
+            sf.menu = null;
+        }
+    }
+    function sfMenu (x, y, rows) {
+        sfCloseMenu();
+        var menu = document.createElement('div');
+        menu.className = 'adox-fmenu';
+        sfPaint(menu);
+        rows.forEach(function (row) {
+            if (row.sep) {
+                menu.appendChild(document.createElement('hr'));
+                return;
+            }
+            if (row.head !== undefined) {
+                var head = document.createElement('div');
+                head.className = 'adox-fmhead';
+                head.textContent = row.head;
+                menu.appendChild(head);
+                return;
+            }
+            var b = document.createElement('button');
+            b.type = 'button';
+            var mark = document.createElement('span');
+            mark.className = 'adox-fmcheck';
+            if (row.checked) mark.innerHTML = SF_CHECK;
+            b.appendChild(mark);
+            if (row.icon) {
+                var ic = document.createElement('span');
+                ic.className = 'adox-fmcheck';
+                ic.innerHTML = row.icon;
+                b.appendChild(ic);
+            }
+            var label = document.createElement('span');
+            label.className = 'adox-fmlabel';
+            label.textContent = row.label;
+            b.appendChild(label);
+            b.addEventListener('click', function () {
+                sfCloseMenu();
+                row.run();
+            });
+            menu.appendChild(b);
+        });
+        document.body.appendChild(menu);
+        var rect = menu.getBoundingClientRect();
+        menu.style.left = Math.max(8, Math.min(x, window.innerWidth - rect.width - 8)) + 'px';
+        menu.style.top = Math.max(8, Math.min(y, window.innerHeight - rect.height - 8)) + 'px';
+        sf.menu = menu;
+    }
+    function sfChipMenu (x, y, folderId) {
+        sfMenu(x, y, [
+            {head: sfFolderName(folderId)},
+            {label: t('sfRename'), icon: SF_FOLDER, run: function () {
+                var chip = sf.bar && sf.bar.querySelector('[data-folder="' + folderId + '"]');
+                if (chip) sfRenameChip(chip, folderId);
+            }},
+            {label: t('sfDelete'), run: function () { sfDeleteFolder(folderId); }}
+        ]);
+    }
+    function sfSpriteMenu (tile, anchor) {
+        var name = sfTileName(tile);
+        var sprite = sfSprites().filter(function (s) { return s.name === name; })[0];
+        if (!sprite) return;
+        var current = sfFolderOf(sprite);
+        var data = sfLoad();
+        var rows = [{head: sprite.name}];
+        data.folders.forEach(function (f) {
+            rows.push({label: f.name, icon: SF_FOLDER, checked: f.id === current, run: function () {
+                sfAssign(sprite, f.id);
+                pageToast(t('sfMoved').replace('{s}', sprite.name).replace('{f}', f.name));
+            }});
+        });
+        if (data.folders.length) rows.push({sep: true});
+        if (current) {
+            rows.push({label: t('sfNone'), run: function () { sfAssign(sprite, ''); }});
+        }
+        rows.push({label: t('sfNew'), icon: SF_FOLDER_PLUS, run: function () {
+            var folder = sfMakeFolder('');
+            sfAssign(sprite, folder.id);
+            pageToast(t('sfCreated'));
+        }});
+        var r = anchor.getBoundingClientRect();
+        sfMenu(r.left, r.bottom + 4, rows);
+    }
+    function sfDecorate () {
+        sfTiles().forEach(function (tile) {
+            if (tile.querySelector('.adox-sf-tile')) return;
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'adox-sf-tile';
+            b.title = t('sfMove');
+            b.setAttribute('aria-label', t('sfMove'));
+            b.innerHTML = SF_FOLDER;
+            b.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                sfSpriteMenu(tile, b);
+            });
+            b.addEventListener('pointerdown', function (event) { event.stopPropagation(); });
+            b.addEventListener('dblclick', function (event) { event.stopPropagation(); });
+            tile.appendChild(b);
+        });
+    }
+    function sfApplyFilter (sprites) {
+        var byName = {};
+        sprites.forEach(function (s) { byName[s.name] = s; });
+        sfTiles().forEach(function (tile) {
+            var sprite = byName[sfTileName(tile)];
+            var show = !sf.active || (sprite && sfFolderOf(sprite) === sf.active);
+            var wrap = tile.parentElement;
+            if (!wrap) return;
+            if (show) {
+                if (wrap.style.display === 'none') wrap.style.display = '';
+            } else if (wrap.style.display !== 'none') {
+                wrap.style.display = 'none';
+            }
+        });
+    }
+    function sfWatch (items) {
+        if (!window.MutationObserver) return;
+        if (sf.obs && sf.obsItems === items) return;
+        if (sf.obs) sf.obs.disconnect();
+        var obs = new MutationObserver(function () {
+            if (sf.raf) return;
+            sf.raf = window.requestAnimationFrame(function () {
+                sf.raf = 0;
+                sfSync();
+            });
+        });
+        obs.observe(items, {childList: true, subtree: true, characterData: true});
+        sf.obs = obs;
+        sf.obsItems = items;
+    }
+    function sfSync () {
+        if (!feat('folders')) { sfTeardown(); return; }
+        var scroll = document.querySelector('[class*="sprite-selector_scroll-wrapper"]');
+        var items = scroll && scroll.querySelector('[class*="sprite-selector_items-wrapper"]');
+        if (!scroll || !items) { sfTeardown(); return; }
+        ensureStyle();
+        // the folder strip lives on the Code tab too, where the costume editor has not mounted and
+        // has therefore not read the locale yet; the same store/locale read is safe to repeat
+        readLocale();
+        var sprites = sfSprites();
+        sfLink(sprites);
+        // a sprite added while a folder is open would be invisible under the filter, and Scratch
+        // gives no other hint that the duplicate landed; the pane steps back to All for it
+        if (sf.active && sf.count && sprites.length > sf.count) sf.active = '';
+        sf.count = sprites.length;
+        sfEnsureBar(scroll);
+        var surface = paintedColor(sfPane() || document.body, 'backgroundColor') || '';
+        if (surface !== sf.theme) {
+            sf.theme = surface;
+            sfPaint(sf.bar);
+            if (sf.hint) sfPaint(sf.hint);
+            if (sf.menu) sfPaint(sf.menu);
+        }
+        sfRenderBar(sprites);
+        sfDecorate();
+        sfApplyFilter(sprites);
+
+        var hint = sfEnsureHint(scroll);
+        var inFolder = 0;
+        if (sf.active) {
+            sprites.forEach(function (s) { if (sfFolderOf(s) === sf.active) inFolder++; });
+        }
+        if (sf.active && !inFolder && sfFolderName(sf.active)) {
+            hint.textContent = t('sfEmpty');
+            hint.style.display = '';
+        } else {
+            hint.style.display = 'none';
+        }
+        sfWatch(items);
+    }
+    function sfTeardown () {
+        // pages that never showed a sprite pane pay one property check, not a DOM sweep per tick
+        if (!sf.mounted) return;
+        sf.mounted = false;
+        if (sf.obs) {
+            sf.obs.disconnect();
+            sf.obs = null;
+            sf.obsItems = null;
+        }
+        if (sf.raf) {
+            window.cancelAnimationFrame(sf.raf);
+            sf.raf = 0;
+        }
+        if (sf.bar) { sf.bar.remove(); sf.bar = null; }
+        if (sf.hint) { sf.hint.remove(); sf.hint = null; }
+        sfCloseMenu();
+        sf.editing = false;
+        sf.sig = '';
+        sf.shown = '';
+        sf.active = '';
+        sf.count = 0;
+        sf.theme = '';
+        Array.prototype.forEach.call(document.querySelectorAll('.adox-sf-tile'), function (b) { b.remove(); });
+        var scroll = document.querySelector('[class*="sprite-selector_scroll-wrapper"]');
+        if (!scroll) return;
+        Array.prototype.forEach.call(scroll.querySelectorAll('[class*="sprite-selector_sprite-wrapper"]'), function (w) {
+            if (w.style.display === 'none') w.style.display = '';
+        });
+    }
+
+    // The optimizer is a separate content script in the same world. It writes folders through this
+    // small API instead of duplicating the store format, so a saved group survives reloads exactly
+    // like one made with the corner buttons.
+    try {
+        window.__adoxSpriteFolders = {
+            available: function () {
+                try { return !!feat('folders'); } catch (e) { return true; }
+            },
+            snapshot: function () {
+                var sprites = sfSprites();
+                sfLink(sprites);
+                var data = sfLoad();
+                var assignments = sprites.map(function (sprite) {
+                    var link = sf.links[sprite.id];
+                    return {id: sprite.id, name: sprite.name, folder: link ? link.f : ''};
+                });
+                return {
+                    available: true,
+                    project: sf.project,
+                    sprites: sprites,
+                    folders: data.folders.map(function (folder) {
+                        return {id: folder.id, name: folder.name};
+                    }),
+                    assignments: assignments
+                };
+            },
+            apply: function (folders) {
+                if (!feat('folders')) return {ok: false, reason: 'disabled'};
+                var sprites = sfSprites();
+                var byId = {};
+                sprites.forEach(function (sprite) { byId[sprite.id] = sprite; });
+                var data = sfLoad();
+                var existing = {};
+                data.folders.forEach(function (folder) {
+                    if (folder && folder.name) existing[String(folder.name).toLowerCase()] = folder;
+                });
+                var usedIds = {};
+                var usedNames = {};
+                var nextFolders = [];
+                var nextMarks = [];
+                var nextLinks = {};
+                var assigned = {};
+                function folderName (value, fallback) {
+                    var base = String(value || fallback || t('sfDefault')).replace(/\s+/g, ' ').trim().slice(0, 24) || t('sfDefault');
+                    var lower = base.toLowerCase();
+                    if (!usedNames[lower]) {
+                        usedNames[lower] = true;
+                        return base;
+                    }
+                    var n = 2;
+                    var candidate;
+                    do {
+                        candidate = (base.slice(0, 20) + ' ' + n++).slice(0, 24);
+                    } while (usedNames[candidate.toLowerCase()]);
+                    usedNames[candidate.toLowerCase()] = true;
+                    return candidate;
+                }
+                var plans = Array.isArray(folders) ? folders : [];
+                for (var i = 0; i < plans.length; i++) {
+                    var plan = plans[i] || {};
+                    var name = folderName(plan.name, t('sfDefault') + ' ' + (nextFolders.length + 1));
+                    var id = '';
+                    if (plan.id && typeof plan.id === 'string' && !usedIds[plan.id]) {
+                        id = plan.id;
+                    } else if (existing[name.toLowerCase()] && !usedIds[existing[name.toLowerCase()].id]) {
+                        id = existing[name.toLowerCase()].id;
+                    } else {
+                        id = sfId();
+                    }
+                    usedIds[id] = true;
+                    nextFolders.push({id: id, name: name});
+                    var ids = Array.isArray(plan.sprites) ? plan.sprites : [];
+                    for (var s = 0; s < ids.length; s++) {
+                        var sprite = byId[ids[s]];
+                        if (!sprite || assigned[sprite.id]) continue;
+                        assigned[sprite.id] = true;
+                        var link = {n: sprite.name, f: id};
+                        nextMarks.push(link);
+                        nextLinks[sprite.id] = link;
+                    }
+                }
+                data.folders = nextFolders;
+                data.marks = nextMarks;
+                sf.links = nextLinks;
+                sfSave();
+                sf.sig = '';
+                sfSync();
+                return {ok: true, folders: nextFolders.length, filed: nextMarks.length};
+            },
+            sync: function () {
+                sf.sig = '';
+                sfSync();
+            }
+        };
+    } catch (e) { /* a host without the folder feature simply has no API */ }
+
+    // The corner button on a tile is the assignment gesture. A pointer drag is deliberately not
+    // used: Scratch treats a tile drag as a reorder, so a drop on a chip would also change the
+    // sprite's layer order — a side effect a grouping action must not have.
+    document.addEventListener('pointerdown', function (event) {
+        if (sf.menu && !sf.menu.contains(event.target)) sfCloseMenu();
+    }, true);
+    window.addEventListener('resize', sfCloseMenu);
+    window.addEventListener('scroll', sfCloseMenu, true);
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') sfCloseMenu();
+    }, true);
+
     function tick () {
         try {
             ensureStyle();
+            sfSync();
             if (!paintEditorOpen()) {
                 closePanel();
                 closePixelEditor();

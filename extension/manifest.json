@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ScratchDream",
-  "version": "2.2.0",
-  "description": "Pixel snapping, shape and pen tools, masks, layers, animation anchor, a plan board and a load diet for the Scratch and TurboWarp costume editor.",
+  "version": "2.6.0",
+  "description": "A safe one-click project optimizer, pixel snapping, shape and pen tools, masks, layers, animation anchor, sprite folders, a plan board, a load diet, live home panels and the users2 profile API for Scratch and the TurboWarp costume editor.",
   "action": {
     "default_title": "ScratchDream",
     "default_popup": "popup.html",
@@ -44,7 +44,9 @@
         "http://127.0.0.1:*/*"
       ],
       "js": [
-        "adox-kostum.js"
+        "adox-kostum.js",
+        "lame.min.js",
+        "optimizer.js"
       ],
       "run_at": "document_idle",
       "world": "MAIN"
@@ -64,6 +66,74 @@
       ],
       "run_at": "document_idle",
       "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "https://scratch.mit.edu/projects/*",
+        "https://scratch.mit.edu/users/*"
+      ],
+      "js": [
+        "comment-quote.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://scratch.mit.edu/*"
+      ],
+      "js": [
+        "homepage.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://scratch.mit.edu/discuss/*"
+      ],
+      "js": [
+        "forum.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://scratch.mit.edu/explore/projects/*"
+      ],
+      "js": [
+        "explore.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://scratch.mit.edu/users/*"
+      ],
+      "js": [
+        "project-stats.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://scratch.mit.edu/*",
+        "https://api.scratch.mit.edu/*"
+      ],
+      "js": [
+        "users2.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/logo-64.png",
+        "sf-logo.svg"
+      ],
+      "matches": [
+        "https://scratch.mit.edu/*"
+      ]
     }
   ]
 }
